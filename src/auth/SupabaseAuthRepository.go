@@ -14,8 +14,10 @@ type supabaseAuthRepository struct {
 	client *supabase.Client
 }
 
-func NewSupabaseAuthRepository() IAuthRepository {
-	return &supabaseAuthRepository{}
+func NewSupabaseAuthRepository(client *supabase.Client) IAuthRepository {
+	return &supabaseAuthRepository{
+		client: client,
+	}
 }
 
 func (r *supabaseAuthRepository) SignUpByEmail(payload ISignupPayload) (*user.User, error) {
