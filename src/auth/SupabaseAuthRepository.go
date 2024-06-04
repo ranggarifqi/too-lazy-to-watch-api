@@ -21,9 +21,10 @@ func NewSupabaseAuthRepository(client *supabase.Client) IAuthRepository {
 }
 
 func (r *supabaseAuthRepository) SignUpByEmail(payload ISignupPayload) (*user.User, error) {
-	res, err := r.client.Auth.Signup(types.SignupRequest{
-		Email:    payload.Email,
-		Password: payload.Password,
+	res, err := r.client.Auth.AdminCreateUser(types.AdminCreateUserRequest{
+		Email:        payload.Email,
+		Password:     &payload.Password,
+		EmailConfirm: true,
 	})
 	if err != nil {
 		return nil, err

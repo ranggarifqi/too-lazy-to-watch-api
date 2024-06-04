@@ -18,7 +18,7 @@ func NewAuthHandler(g *echo.Group, authRepository auth.IAuthRepository) {
 		authRepository: authRepository,
 	}
 
-	g.POST("/signupz", h.SignUp)
+	g.POST("/admin/signup", h.SignUp)
 }
 
 func (h *authHandler) SignUp(c echo.Context) error {
