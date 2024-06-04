@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
+var TABLE_NAME = "Users"
+
 type User struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
