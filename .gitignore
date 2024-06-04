@@ -1,0 +1,3 @@
+app
+error_*.log
+.env
