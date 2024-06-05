@@ -1,7 +1,6 @@
 package v1_auth
 
 import (
-	"fmt"
 	"net/http"
 	"too-lazy-to-watch-api/routes"
 	"too-lazy-to-watch-api/src/auth"
@@ -49,7 +48,6 @@ func (h *authHandler) SignIn(c echo.Context) error {
 	if err := routes.ParseAndValidatePayload(payload, c); err != nil {
 		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	}
-	fmt.Printf("payload: %+v\n", payload)
 
 	token, err := h.authRepository.SignInWithEmailPassword(payload.Email, payload.Password)
 	if err != nil {
