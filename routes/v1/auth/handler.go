@@ -1,6 +1,7 @@
 package v1_auth
 
 import (
+	"fmt"
 	"net/http"
 	"too-lazy-to-watch-api/routes"
 	"too-lazy-to-watch-api/src/auth"
@@ -20,20 +21,15 @@ func NewAuthHandler(g *echo.Group, authRepository auth.IAuthRepository) {
 
 	// TODO: Use basic auth to protect this endpoint
 	g.POST("/admin/signup", h.SignUp)
+
+	g.POST("/signin", h.SignIn)
 }
 
+// TODO: Protect this by using BASIC auth
 func (h *authHandler) SignUp(c echo.Context) error {
 	payload := new(SignUpDTO)
-	err := c.Bind(payload)
-	if err != nil {
-		apiError := routes.ConstructApiError(err)
-		return c.JSON(apiError.Code, apiError)
-	}
-
-	err = c.Validate(payload)
-	if err != nil {
-		apiError := routes.ConstructApiError(custom_error.NewBadRequestError(err.Error()))
-		return c.JSON(apiError.Code, apiError)
+	if err := routes.ParseAndValidatePayload(payload, c); err != nil {
+		return err
 	}
 
 	res, err := h.authRepository.SignUpByEmail(auth.ISignupPayload{
@@ -47,4 +43,14 @@ func (h *authHandler) SignUp(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func (h *authHandler) SignIn(c echo.Context) error {
+	payload := new(SignInDTO)
+	if err := routes.ParseAndValidatePayload(payload, c); err != nil {
+		return err
+	}
+	fmt.Printf("payload: %+v\n", payload)
+
+	return c.JSON(http.StatusOK, "ok")
 }
