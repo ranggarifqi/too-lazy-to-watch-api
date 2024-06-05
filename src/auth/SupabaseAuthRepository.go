@@ -1,8 +1,7 @@
 package auth
 
 import (
-	"bytes"
-	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"too-lazy-to-watch-api/src/user"
 
@@ -24,7 +23,6 @@ func NewSupabaseAuthRepository(client *supabase.Client, authClient gotrue.Client
 	}
 }
 
-// TODO: Change supabase client to
 func (r *supabaseAuthRepository) SignUpByEmail(payload ISignupPayload) (*user.User, error) {
 	fmt.Println("Creating auth user")
 	res, err := r.authClient.AdminCreateUser(types.AdminCreateUserRequest{
@@ -37,23 +35,43 @@ func (r *supabaseAuthRepository) SignUpByEmail(payload ISignupPayload) (*user.Us
 	}
 
 	userPayload := struct {
-		id    uuid.UUID
-		email string
-		name  string
-	}{res.ID, payload.Email, payload.Name}
+		Id    string `json:"id"`
+		Email string `json:"email"`
+		Name  string `json:"name"`
+	}{res.ID.String(), payload.Email, payload.Name}
 
-	fmt.Println("Creating User data")
 	data, _, err := r.client.From(user.TABLE_NAME).Insert(userPayload, true, "id", "", "").Execute()
 	if err != nil {
+		r.adminDeleteUser(res.ID)
+
 		return nil, err
 	}
 
-	var structData user.User
+	users := []user.User{}
 
-	err = binary.Read(bytes.NewReader(data), binary.LittleEndian, &structData)
+	err = json.Unmarshal(data, &users)
 	if err != nil {
+		r.adminDeleteUser(res.ID)
+		r.deleteUserById(res.ID)
+
 		return nil, err
 	}
 
-	return &structData, nil
+	return &users[0], nil
+}
+
+func (r *supabaseAuthRepository) adminDeleteUser(userId uuid.UUID) {
+	err := r.authClient.AdminDeleteUser(types.AdminDeleteUserRequest{
+		UserID: userId,
+	})
+	if err != nil {
+		fmt.Printf("Failed to delete user auth: %v\n", err)
+	}
+}
+
+func (r *supabaseAuthRepository) deleteUserById(userId uuid.UUID) {
+	_, _, err := r.client.From(user.TABLE_NAME).Delete("", "").Eq("id", userId.String()).Execute()
+	if err != nil {
+		fmt.Printf("Failed to delete a user: %v\n", err)
+	}
 }
