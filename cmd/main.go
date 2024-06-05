@@ -14,9 +14,9 @@ import (
 func main() {
 	helper.InitializeEnv("./.env")
 
-	supabaseClient := helper.GetSupabaseClient()
+	supabaseClient, adminClient := helper.GetSupabaseClient()
 
-	authRepository := auth.NewSupabaseAuthRepository(supabaseClient)
+	authRepository := auth.NewSupabaseAuthRepository(supabaseClient, adminClient)
 
 	e := echo.New()
 	e.Validator = &routes.CustomValidator{Validator: validator.New()}

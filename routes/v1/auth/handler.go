@@ -18,6 +18,7 @@ func NewAuthHandler(g *echo.Group, authRepository auth.IAuthRepository) {
 		authRepository: authRepository,
 	}
 
+	// TODO: Use basic auth to protect this endpoint
 	g.POST("/admin/signup", h.SignUp)
 }
 
