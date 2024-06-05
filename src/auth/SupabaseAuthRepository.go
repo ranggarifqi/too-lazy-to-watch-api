@@ -60,6 +60,15 @@ func (r *supabaseAuthRepository) SignUpByEmail(payload ISignupPayload) (*user.Us
 	return &users[0], nil
 }
 
+func (r *supabaseAuthRepository) SignInWithEmailPassword(email string, password string) (string, error) {
+	res, err := r.client.SignInWithEmailPassword(email, password)
+	if err != nil {
+		return "", err
+	}
+
+	return res.AccessToken, nil
+}
+
 func (r *supabaseAuthRepository) adminDeleteUser(userId uuid.UUID) {
 	err := r.authClient.AdminDeleteUser(types.AdminDeleteUserRequest{
 		UserID: userId,

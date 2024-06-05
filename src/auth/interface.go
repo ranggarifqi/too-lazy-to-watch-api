@@ -10,5 +10,5 @@ type ISignupPayload struct {
 
 type IAuthRepository interface {
 	SignUpByEmail(payload ISignupPayload) (*user.User, error)
-	// LoginByPassword(email string, password string) (string, error)
+	SignInWithEmailPassword(email string, password string) (string, error)
 }
