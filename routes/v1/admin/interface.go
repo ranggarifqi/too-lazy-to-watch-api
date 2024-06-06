@@ -1,6 +1,7 @@
-package v1_auth
+package v1_admin
 
-type SignInDTO struct {
+type SignUpDTO struct {
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
+	Name     string `json:"name" validate:"required"`
 }
