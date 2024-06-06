@@ -1,3 +1,4 @@
 app
 error_*.log
 .env
+tmp/*.mp4

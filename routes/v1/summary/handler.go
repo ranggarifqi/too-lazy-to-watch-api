@@ -25,5 +25,7 @@ func (h *handler) CreateFromYoutube(c echo.Context) error {
 	// 	return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	// }
 
+	h.summaryService.CreateFromYoutubeVideo("1", "https://www.youtube.com/watch?v=-G-DByczbWA")
+
 	return c.JSON(http.StatusOK, "ok")
 }

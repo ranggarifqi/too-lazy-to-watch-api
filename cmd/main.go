@@ -24,7 +24,7 @@ func main() {
 	authRepository := auth.NewSupabaseAuthRepository(supabaseClient, adminClient)
 
 	summaryRepository := summary.NewSupabaseSummaryRepository(supabaseClient)
-	summaryService := summary.NewSummaryService(summaryRepository, &ytClient)
+	summaryService := summary.NewSummaryService(summaryRepository, ytClient)
 
 	e := echo.New()
 	e.Validator = &routes.CustomValidator{Validator: validator.New()}
