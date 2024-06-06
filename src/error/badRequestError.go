@@ -5,10 +5,7 @@ import (
 	"net/http"
 )
 
-type badRequestError struct {
-	statusCode int
-	errMessage string
-}
+type badRequestError CustomError
 
 func NewBadRequestError(errMessage string) Error {
 	return &badRequestError{
