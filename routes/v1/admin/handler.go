@@ -6,7 +6,7 @@ import (
 	"too-lazy-to-watch-api/src/auth"
 	custom_error "too-lazy-to-watch-api/src/error"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type handler struct {

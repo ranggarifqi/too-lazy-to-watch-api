@@ -6,7 +6,7 @@ import (
 	v1_auth "too-lazy-to-watch-api/routes/v1/auth"
 	"too-lazy-to-watch-api/src/auth"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type V1Dependencies struct {
