@@ -1,4 +1,4 @@
-package v1_auth
+package v1_admin
 
 import (
 	"net/http"
@@ -18,24 +18,24 @@ func NewHandler(g *echo.Group, authRepository auth.IAuthRepository) {
 		authRepository: authRepository,
 	}
 
-	g.POST("/signin", h.SignIn)
+	// TODO: Use basic auth to protect this endpoint
+	g.POST("/signup", h.SignUp)
 }
 
-func (h *handler) SignIn(c echo.Context) error {
-	payload := new(SignInDTO)
+// TODO: Protect this by using BASIC auth
+func (h *handler) SignUp(c echo.Context) error {
+	payload := new(SignUpDTO)
 	if err := routes.ParseAndValidatePayload(payload, c); err != nil {
 		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	}
 
-	token, err := h.authRepository.SignInWithEmailPassword(payload.Email, payload.Password)
+	res, err := h.authRepository.SignUpByEmail(auth.ISignupPayload{
+		Email:    payload.Email,
+		Password: payload.Password,
+		Name:     payload.Name,
+	})
 	if err != nil {
 		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
-	}
-
-	res := struct {
-		Token string `json:"token"`
-	}{
-		Token: token,
 	}
 
 	return c.JSON(http.StatusOK, res)
