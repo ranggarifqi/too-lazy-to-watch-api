@@ -3,10 +3,11 @@ package v1_auth
 import (
 	"net/http"
 	"too-lazy-to-watch-api/routes"
+	custom_middleware "too-lazy-to-watch-api/routes/middleware"
 	"too-lazy-to-watch-api/src/auth"
 	custom_error "too-lazy-to-watch-api/src/error"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type handler struct {
@@ -19,6 +20,10 @@ func NewHandler(g *echo.Group, authRepository auth.IAuthRepository) {
 	}
 
 	g.POST("/signin", h.SignIn)
+	g.GET("/test", func(c echo.Context) error {
+		claim := routes.GetUserClaim(c)
+		return c.JSON(http.StatusOK, claim)
+	}, custom_middleware.GetJWTAuth())
 }
 
 func (h *handler) SignIn(c echo.Context) error {

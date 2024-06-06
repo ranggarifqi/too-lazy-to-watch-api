@@ -4,8 +4,8 @@ import (
 	"os"
 	custom_error "too-lazy-to-watch-api/src/error"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var AdminAuth = middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {

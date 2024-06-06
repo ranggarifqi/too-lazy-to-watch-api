@@ -5,7 +5,7 @@ import (
 	"net/http"
 	custom_error "too-lazy-to-watch-api/src/error"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func ConstructApiError(err error) *echo.HTTPError {

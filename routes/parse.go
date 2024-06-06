@@ -1,7 +1,8 @@
 package routes
 
 import (
-	"github.com/labstack/echo"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
 )
 
 func ParseAndValidatePayload[T comparable](payload T, c echo.Context) error {
@@ -16,4 +17,8 @@ func ParseAndValidatePayload[T comparable](payload T, c echo.Context) error {
 	}
 
 	return nil
+}
+
+func GetUserClaim(c echo.Context) jwt.MapClaims {
+	return c.Get("userClaim").(jwt.MapClaims)
 }
