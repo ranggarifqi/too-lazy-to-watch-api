@@ -23,7 +23,7 @@ func NewHandler(g *echo.Group, authRepository auth.IAuthRepository) {
 	g.GET("/test", func(c echo.Context) error {
 		claim := routes.GetUserClaim(c)
 		return c.JSON(http.StatusOK, claim)
-	}, custom_middleware.JwtAuth)
+	}, custom_middleware.GetJWTAuth())
 }
 
 func (h *handler) SignIn(c echo.Context) error {

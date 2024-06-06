@@ -1,6 +1,7 @@
 package custom_middleware
 
 import (
+	"os"
 	"too-lazy-to-watch-api/routes"
 	custom_error "too-lazy-to-watch-api/src/error"
 
@@ -9,17 +10,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var JwtAuth = echojwt.WithConfig(echojwt.Config{
-	// SigningKey: []byte(os.Getenv("JWT_SECRET")),
-	SigningKey: []byte("nICAOCtc7FFX0cxRW/5VUK7bEPBEJCeHIKs94TZMEyfVPZHJwCpSSWby6+/uCV1yOv3Y9pW41jrHFrPraaok2Q=="),
-	ErrorHandler: func(c echo.Context, err error) error {
-		return routes.HandleError(c, custom_error.NewUnauthorizedError("Invalid or missing JWT token"))
-	},
-	SuccessHandler: func(c echo.Context) {
-		claim, _ := ParseAndGetUserClaim(c)
-		c.Set("userClaim", claim)
-	},
-})
+func GetJWTAuth() echo.MiddlewareFunc {
+	return echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(os.Getenv("JWT_SECRET")),
+		ErrorHandler: func(c echo.Context, err error) error {
+			return routes.HandleError(c, custom_error.NewUnauthorizedError("Invalid or missing JWT token"))
+		},
+		SuccessHandler: func(c echo.Context) {
+			claim, _ := ParseAndGetUserClaim(c)
+			c.Set("userClaim", claim)
+		},
+	})
+}
 
 func ParseAndGetUserClaim(c echo.Context) (jwt.MapClaims, custom_error.Error) {
 	token, ok := c.Get("user").(*jwt.Token) // by default token is stored under `user` key
