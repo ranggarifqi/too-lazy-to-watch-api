@@ -1,6 +1,7 @@
 package summary
 
 type CreateSummaryPayload struct {
+	Id       string `json:"id"`
 	UserId   string `json:"user_id"`
 	Status   string `json:"status"`
 	VideoUrl string `json:"video_url"`
