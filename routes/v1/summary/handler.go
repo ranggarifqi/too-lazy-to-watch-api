@@ -2,6 +2,8 @@ package v1_summary
 
 import (
 	"net/http"
+	"too-lazy-to-watch-api/routes"
+	custom_error "too-lazy-to-watch-api/src/error"
 	"too-lazy-to-watch-api/src/summary"
 
 	"github.com/labstack/echo/v4"
@@ -25,7 +27,10 @@ func (h *handler) CreateFromYoutube(c echo.Context) error {
 	// 	return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	// }
 
-	h.summaryService.CreateFromYoutubeVideo("1", "https://www.youtube.com/watch?v=-G-DByczbWA")
+	_, err := h.summaryService.CreateFromYoutubeVideo("1", "https://www.youtube.com/watch?v=-G-DByczbWA")
+	if err != nil {
+		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
+	}
 
 	return c.JSON(http.StatusOK, "ok")
 }

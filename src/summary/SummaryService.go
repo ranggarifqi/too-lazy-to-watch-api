@@ -34,6 +34,11 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	fmt.Printf("Video downloaded: %s\n", videoPath)
 
 	// Upload it to Supabase storage
+	uploadedUrl, err := s.summaryRepository.UploadVideo(videoPath, id)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("Uploaded %v\n", uploadedUrl)
 
 	// Store in db
 
