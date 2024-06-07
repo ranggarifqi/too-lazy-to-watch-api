@@ -53,6 +53,11 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 		return nil, err
 	}
 
+	// Delete local tmp file
+	if err = os.Remove(videoPath); err != nil {
+		return nil, err
+	}
+
 	return summary, nil
 }
 
