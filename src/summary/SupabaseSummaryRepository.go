@@ -36,14 +36,10 @@ func (s *supabaseSummaryRepository) UploadVideo(tmpVideoPath string, uniqueId st
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("Uploaded")
 
-	// TODO: Got this bug. https://github.com/supabase-community/storage-go/issues/24. Find a workaround
-	fiveDays := 5 * 24 * 60 * 60
-	result, err := s.client.Storage.CreateSignedUrl(BUCKET_NAME, cloudRelativePath, fiveDays)
-	if err != nil {
-		return "", err
-	}
+	fmt.Printf("Uploaded")
+
+	result := s.client.Storage.GetPublicUrl(BUCKET_NAME, cloudRelativePath)
 
 	return result.SignedURL, nil
 }
