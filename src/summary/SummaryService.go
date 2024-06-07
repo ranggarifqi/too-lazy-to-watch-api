@@ -73,6 +73,7 @@ func (s *summaryService) downloadYoutubeVideo(youtubeVideoId string, uniqueId st
 func NewSummaryService(summaryRepository ISummaryRepository, youtubeClient youtube.Client) ISummaryService {
 	return &summaryService{
 		summaryRepository: summaryRepository,
+		youtubeClient:     youtubeClient,
 	}
 }
 
