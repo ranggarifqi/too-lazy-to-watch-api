@@ -27,33 +27,47 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	}
 	fmt.Printf("Video ID: %s\n", videoId)
 
-	video, err := s.youtubeClient.GetVideo(videoId)
+	videoPath, err := s.downloadYoutubeVideo(videoId, id)
 	if err != nil {
 		return nil, err
 	}
-	formats := video.Formats.WithAudioChannels().Quality("360")
+	fmt.Printf("Video downloaded: %s\n", videoPath)
+
+	// Upload it to Supabase storage
+
+	// Store in db
+
+	return nil, nil
+}
+
+const VIDEO_QUALITY string = "360"
+
+func (s *summaryService) downloadYoutubeVideo(youtubeVideoId string, uniqueId string) (string, error) {
+	video, err := s.youtubeClient.GetVideo(youtubeVideoId)
+	if err != nil {
+		return "", err
+	}
+	formats := video.Formats.WithAudioChannels().Quality(VIDEO_QUALITY)
 
 	stream, _, err := s.youtubeClient.GetStream(video, &formats[0])
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer stream.Close()
 
-	file, err := os.Create(fmt.Sprintf("./tmp/%v.mp4", id))
+	videoPath := fmt.Sprintf("./tmp/%v.mp4", uniqueId)
+
+	file, err := os.Create(videoPath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer file.Close()
 
 	_, err = io.Copy(file, stream)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-
-	// Generate UUID
-	// Store it in Supabase storage
-
-	return nil, nil
+	return videoPath, nil
 }
 
 func NewSummaryService(summaryRepository ISummaryRepository, youtubeClient youtube.Client) ISummaryService {
