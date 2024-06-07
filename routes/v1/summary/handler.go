@@ -22,12 +22,15 @@ func NewHandler(g *echo.Group, summaryService summary.ISummaryService) {
 }
 
 func (h *handler) CreateFromYoutube(c echo.Context) error {
-	// payload := new(SignInDTO)
-	// if err := routes.ParseAndValidatePayload(payload, c); err != nil {
-	// 	return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
-	// }
+	payload := new(CreateFromYoutubeDTO)
+	if err := routes.ParseAndValidatePayload(payload, c); err != nil {
+		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
+	}
 
-	res, err := h.summaryService.CreateFromYoutubeVideo("1", "https://www.youtube.com/watch?v=-G-DByczbWA")
+	claim := routes.GetUserClaim(c)
+	userId := claim["sub"].(string)
+
+	res, err := h.summaryService.CreateFromYoutubeVideo(userId, payload.Url)
 	if err != nil {
 		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	}

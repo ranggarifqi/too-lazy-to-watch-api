@@ -42,10 +42,11 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 
 	// Store in db
 	summaryPayload := &CreateSummaryPayload{
-		Id:       id,
-		UserId:   userId,
-		Status:   "PENDING",
-		VideoUrl: uploadedUrl,
+		Id:              id,
+		UserId:          userId,
+		Status:          "PENDING",
+		VideoUrl:        uploadedUrl,
+		YoutubeVideoUrl: videoUrl,
 	}
 	summary, err := s.summaryRepository.Create(*summaryPayload)
 	if err != nil {
