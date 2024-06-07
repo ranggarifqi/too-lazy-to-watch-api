@@ -7,6 +7,7 @@ import (
 	"os"
 	custom_error "too-lazy-to-watch-api/src/error"
 
+	"github.com/google/uuid"
 	"github.com/kkdai/youtube/v2"
 )
 
@@ -17,6 +18,8 @@ type summaryService struct {
 
 // CreateFromYoutubeVideo implements ISummaryService.
 func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) (*Summary, error) {
+	id := uuid.New().String()
+
 	// Download youtube video
 	videoId, err := getYoutubeVideoId(videoUrl)
 	if err != nil {
@@ -36,7 +39,7 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	}
 	defer stream.Close()
 
-	file, err := os.Create("./tmp/video.mp4")
+	file, err := os.Create(fmt.Sprintf("./tmp/%v.mp4", id))
 	if err != nil {
 		return nil, err
 	}
