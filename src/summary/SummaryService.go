@@ -41,8 +41,18 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	fmt.Printf("Uploaded %v\n", uploadedUrl)
 
 	// Store in db
+	summaryPayload := &CreateSummaryPayload{
+		Id:       id,
+		UserId:   userId,
+		Status:   "PENDING",
+		VideoUrl: uploadedUrl,
+	}
+	summary, err := s.summaryRepository.Create(*summaryPayload)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	return summary, nil
 }
 
 const VIDEO_QUALITY string = "360"

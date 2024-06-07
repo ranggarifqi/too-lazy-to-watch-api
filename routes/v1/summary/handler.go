@@ -27,10 +27,10 @@ func (h *handler) CreateFromYoutube(c echo.Context) error {
 	// 	return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	// }
 
-	_, err := h.summaryService.CreateFromYoutubeVideo("1", "https://www.youtube.com/watch?v=-G-DByczbWA")
+	res, err := h.summaryService.CreateFromYoutubeVideo("1", "https://www.youtube.com/watch?v=-G-DByczbWA")
 	if err != nil {
 		return routes.HandleError(c, custom_error.NewBadRequestError(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, "ok")
+	return c.JSON(http.StatusOK, res)
 }
