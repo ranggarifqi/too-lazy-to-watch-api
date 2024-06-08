@@ -1,5 +1,10 @@
 package taskPublisher
 
-type ITaskPublisherRepository[T any] interface {
-	Publish(channel string, payload T) error
+type PublishPayload struct {
+	ContentType string
+	Body        []byte
+}
+
+type ITaskPublisherRepository interface {
+	Publish(channel string, payload PublishPayload) error
 }
