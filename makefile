@@ -1,14 +1,17 @@
 build: 
 	go build -o app cmd/main.go
 
-run: build 
+build-and-run: build 
 	./app
 
 build-docker:
 	docker-compose build
 
-run-docker: 
-	docker-compose up
+run-dev: 
+	docker compose up --watch
+
+run:
+	./app
 
 # Test
 test:

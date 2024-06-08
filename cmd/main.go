@@ -17,6 +17,7 @@ func main() {
 	helper.InitializeEnv("./.env")
 
 	supabaseClient, adminClient := helper.GetSupabaseClient()
+	_ = helper.GetRabbitMQClient()
 
 	ytClient := youtube.Client{}
 
