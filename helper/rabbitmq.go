@@ -16,3 +16,12 @@ func GetRabbitMQClient() *amqp091.Connection {
 	}
 	return client
 }
+
+func GetRabbitMQChannel() *amqp091.Channel {
+	client := GetRabbitMQClient()
+	channel, err := client.Channel()
+	if err != nil {
+		log.Fatalf("Failed to create RabbitMQ channel: %s", err)
+	}
+	return channel
+}
