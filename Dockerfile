@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . /app/
 
 # Install any needed dependencies
+RUN apk add --no-cache make
 RUN go mod download
 RUN make build
 
