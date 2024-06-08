@@ -7,6 +7,7 @@ import (
 	v1 "too-lazy-to-watch-api/routes/v1"
 	"too-lazy-to-watch-api/src/auth"
 	"too-lazy-to-watch-api/src/summary"
+	"too-lazy-to-watch-api/src/taskPublisher"
 
 	"github.com/go-playground/validator"
 	"github.com/kkdai/youtube/v2"
@@ -17,15 +18,17 @@ func main() {
 	helper.InitializeEnv("./.env")
 
 	supabaseClient, adminClient := helper.GetSupabaseClient()
-	_ = helper.GetRabbitMQChannel()
+	rabbitMQChannel := helper.GetRabbitMQChannel()
 
 	ytClient := youtube.Client{}
 
 	/* Dependency Setup */
 	authRepository := auth.NewSupabaseAuthRepository(supabaseClient, adminClient)
 
+	taskPublisherRepository := taskPublisher.NewRabbitMQPublisherRepository(rabbitMQChannel)
+
 	summaryRepository := summary.NewSupabaseSummaryRepository(supabaseClient)
-	summaryService := summary.NewSummaryService(summaryRepository, ytClient)
+	summaryService := summary.NewSummaryService(summaryRepository, ytClient, taskPublisherRepository)
 
 	e := echo.New()
 	e.Validator = &routes.CustomValidator{Validator: validator.New()}
