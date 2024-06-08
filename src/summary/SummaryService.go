@@ -6,15 +6,19 @@ import (
 	"net/url"
 	"os"
 	custom_error "too-lazy-to-watch-api/src/error"
+	"too-lazy-to-watch-api/src/taskPublisher"
 
 	"github.com/google/uuid"
 	"github.com/kkdai/youtube/v2"
 )
 
 type summaryService struct {
-	summaryRepository ISummaryRepository
-	youtubeClient     youtube.Client
+	summaryRepository       ISummaryRepository
+	youtubeClient           youtube.Client
+	taskPublisherRepository taskPublisher.ITaskPublisherRepository
 }
+
+const TASK_CHANNEL = "summarization"
 
 // CreateFromYoutubeVideo implements ISummaryService.
 func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) (*Summary, error) {
@@ -50,11 +54,20 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	}
 	summary, err := s.summaryRepository.Create(*summaryPayload)
 	if err != nil {
+		// TODO: Delete video in cloud storage
 		return nil, err
 	}
 
 	// Delete local tmp file
 	if err = os.Remove(videoPath); err != nil {
+		return nil, err
+	}
+
+	if err = s.taskPublisherRepository.Publish(TASK_CHANNEL, taskPublisher.PublishPayload{
+		ContentType: "text/plain",
+		Body:        []byte(id), // send the summary id
+	}); err != nil {
+		// TODO: Delete video & summary if error
 		return nil, err
 	}
 
@@ -91,10 +104,11 @@ func (s *summaryService) downloadYoutubeVideo(youtubeVideoId string, uniqueId st
 	return videoPath, nil
 }
 
-func NewSummaryService(summaryRepository ISummaryRepository, youtubeClient youtube.Client) ISummaryService {
+func NewSummaryService(summaryRepository ISummaryRepository, youtubeClient youtube.Client, taskPublisherRepository taskPublisher.ITaskPublisherRepository) ISummaryService {
 	return &summaryService{
-		summaryRepository: summaryRepository,
-		youtubeClient:     youtubeClient,
+		summaryRepository:       summaryRepository,
+		youtubeClient:           youtubeClient,
+		taskPublisherRepository: taskPublisherRepository,
 	}
 }
 
