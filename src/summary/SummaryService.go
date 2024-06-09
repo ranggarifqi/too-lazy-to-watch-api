@@ -78,7 +78,7 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	}); err != nil {
 		deleteLocalTmpVideo(videoPath)
 		s.storageRepository.DeleteFile(BUCKET_NAME, cloudRelativePath)
-		// TODO: Delete summary row
+		s.summaryRepository.DeleteById(id)
 		return nil, err
 	}
 

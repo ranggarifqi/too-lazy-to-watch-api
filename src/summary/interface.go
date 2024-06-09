@@ -12,6 +12,7 @@ const TABLE_NAME = "Summaries"
 
 type ISummaryRepository interface {
 	Create(payload CreateSummaryPayload) (*Summary, error)
+	DeleteById(id string) error
 }
 
 type ISummaryService interface {

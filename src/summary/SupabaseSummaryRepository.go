@@ -10,6 +10,15 @@ type supabaseSummaryRepository struct {
 	client *supabase.Client
 }
 
+func (s *supabaseSummaryRepository) DeleteById(id string) error {
+	_, _, err := s.client.From(TABLE_NAME).Delete("", "").Eq("id", id).Execute()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *supabaseSummaryRepository) Create(payload CreateSummaryPayload) (*Summary, error) {
 	res, _, err := s.client.From(TABLE_NAME).Insert(payload, false, "", "", "").Execute()
 	if err != nil {
