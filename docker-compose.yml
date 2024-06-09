@@ -4,7 +4,7 @@ services:
     build: .
     develop:
       watch:
-        - action: sync+restart
+        - action: rebuild
           path: ./
           target: /app
           ignore:
