@@ -12,14 +12,27 @@ type rabbitMQTPublisherRepository struct {
 }
 
 func (r *rabbitMQTPublisherRepository) Publish(channel string, payload PublishPayload) error {
+
+	q, err := r.channel.QueueDeclare(
+		channel, // name
+		false,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
+	)
+	if err != nil {
+		return err
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := r.channel.PublishWithContext(ctx,
-		"",      // exchange
-		channel, // routing key
-		false,   // mandatory
-		false,   // immediate
+	err = r.channel.PublishWithContext(ctx,
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
 		amqp091.Publishing{
 			ContentType: payload.ContentType,
 			Body:        payload.Body,
