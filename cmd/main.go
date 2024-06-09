@@ -6,6 +6,7 @@ import (
 	"too-lazy-to-watch-api/routes"
 	v1 "too-lazy-to-watch-api/routes/v1"
 	"too-lazy-to-watch-api/src/auth"
+	"too-lazy-to-watch-api/src/storage"
 	"too-lazy-to-watch-api/src/summary"
 	"too-lazy-to-watch-api/src/taskPublisher"
 
@@ -25,10 +26,11 @@ func main() {
 	/* Dependency Setup */
 	authRepository := auth.NewSupabaseAuthRepository(supabaseClient, adminClient)
 
-	taskPublisherRepository := taskPublisher.NewRabbitMQPublisherRepository(rabbitMQChannel)
+	supabaseStorageRepository := storage.NewSupabaseStorageRepository(supabaseClient)
+	rabbitMQPublisherRepository := taskPublisher.NewRabbitMQPublisherRepository(rabbitMQChannel)
 
 	summaryRepository := summary.NewSupabaseSummaryRepository(supabaseClient)
-	summaryService := summary.NewSummaryService(summaryRepository, ytClient, taskPublisherRepository)
+	summaryService := summary.NewSummaryService(summaryRepository, ytClient, rabbitMQPublisherRepository, supabaseStorageRepository)
 
 	e := echo.New()
 	e.Validator = &routes.CustomValidator{Validator: validator.New()}

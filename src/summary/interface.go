@@ -12,7 +12,6 @@ const TABLE_NAME = "Summaries"
 
 type ISummaryRepository interface {
 	Create(payload CreateSummaryPayload) (*Summary, error)
-	UploadVideo(videoPath string, uniqueId string) (string, error)
 }
 
 type ISummaryService interface {

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	custom_error "too-lazy-to-watch-api/src/error"
+	"too-lazy-to-watch-api/src/storage"
 	"too-lazy-to-watch-api/src/taskPublisher"
 
 	"github.com/google/uuid"
@@ -16,9 +17,11 @@ type summaryService struct {
 	summaryRepository       ISummaryRepository
 	youtubeClient           youtube.Client
 	taskPublisherRepository taskPublisher.ITaskPublisherRepository
+	storageRepository       storage.IStorageRepository
 }
 
 const TASK_CHANNEL = "summarization"
+const BUCKET_NAME = "video"
 
 // CreateFromYoutubeVideo implements ISummaryService.
 func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) (*Summary, error) {
@@ -38,7 +41,16 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	fmt.Printf("Video downloaded: %s\n", videoPath)
 
 	// Upload it to Supabase storage
-	uploadedUrl, err := s.summaryRepository.UploadVideo(videoPath, id)
+	videoFile, err := os.Open(videoPath)
+	if err != nil {
+		return nil, err
+	}
+	defer videoFile.Close()
+
+	cloudRelativePath := fmt.Sprintf("%s.mp4", id)
+	uploadedUrl, err := s.storageRepository.Upload(BUCKET_NAME, cloudRelativePath, videoFile, storage.FileOptions{
+		ContentType: "video/mp4",
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -104,11 +116,12 @@ func (s *summaryService) downloadYoutubeVideo(youtubeVideoId string, uniqueId st
 	return videoPath, nil
 }
 
-func NewSummaryService(summaryRepository ISummaryRepository, youtubeClient youtube.Client, taskPublisherRepository taskPublisher.ITaskPublisherRepository) ISummaryService {
+func NewSummaryService(summaryRepository ISummaryRepository, youtubeClient youtube.Client, taskPublisherRepository taskPublisher.ITaskPublisherRepository, storageRepository storage.IStorageRepository) ISummaryService {
 	return &summaryService{
 		summaryRepository:       summaryRepository,
 		youtubeClient:           youtubeClient,
 		taskPublisherRepository: taskPublisherRepository,
+		storageRepository:       storageRepository,
 	}
 }
 
