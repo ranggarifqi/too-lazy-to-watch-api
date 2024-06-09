@@ -11,6 +11,15 @@ type supabaseStorageRepository struct {
 	client *supabase.Client
 }
 
+func (s *supabaseStorageRepository) DeleteFile(bucketId string, relativePath string) error {
+	_, err := s.client.Storage.RemoveFile(bucketId, []string{relativePath})
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *supabaseStorageRepository) Upload(bucketId string, relativePath string, data io.Reader, fileOptions FileOptions) (string, error) {
 	upsert := true
 	cacheControl := "3600"

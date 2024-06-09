@@ -52,6 +52,7 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 		ContentType: "video/mp4",
 	})
 	if err != nil {
+		deleteLocalTmpVideo(videoPath)
 		return nil, err
 	}
 	fmt.Printf("Uploaded %v\n", uploadedUrl)
@@ -66,12 +67,8 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 	}
 	summary, err := s.summaryRepository.Create(*summaryPayload)
 	if err != nil {
-		// TODO: Delete video in cloud storage
-		return nil, err
-	}
-
-	// Delete local tmp file
-	if err = os.Remove(videoPath); err != nil {
+		deleteLocalTmpVideo(videoPath)
+		s.storageRepository.DeleteFile(BUCKET_NAME, cloudRelativePath)
 		return nil, err
 	}
 
@@ -79,7 +76,14 @@ func (s *summaryService) CreateFromYoutubeVideo(userId string, videoUrl string) 
 		ContentType: "text/plain",
 		Body:        []byte(id), // send the summary id
 	}); err != nil {
-		// TODO: Delete video & summary if error
+		deleteLocalTmpVideo(videoPath)
+		s.storageRepository.DeleteFile(BUCKET_NAME, cloudRelativePath)
+		// TODO: Delete summary row
+		return nil, err
+	}
+
+	// Delete local tmp file
+	if err = deleteLocalTmpVideo(videoPath); err != nil {
 		return nil, err
 	}
 
@@ -137,4 +141,11 @@ func getYoutubeVideoId(urlStr string) (string, error) {
 		return "", custom_error.NewBadRequestError(fmt.Sprintf("no video ID found in URL: %s", urlStr))
 	}
 	return videoId, nil
+}
+
+func deleteLocalTmpVideo(videoPath string) error {
+	if err := os.Remove(videoPath); err != nil {
+		return err
+	}
+	return nil
 }
