@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    develop:
+      watch:
+        - action: rebuild
+          path: ./
+          target: /app
+          ignore:
+            - tmp/
+            - rabbitmq-data/
+            - ./app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+    restart: always
+    command: make build-and-run
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    volumes:
+      - ./rabbitmq-data:/var/lib/rabbitmq/data
+    environment:
+      - RABBITMQ_DEFAULT_USER=rangga
+    env_file:
+      - ./.env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
