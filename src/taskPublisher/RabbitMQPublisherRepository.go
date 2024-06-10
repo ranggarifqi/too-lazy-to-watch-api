@@ -15,7 +15,7 @@ func (r *rabbitMQTPublisherRepository) Publish(channel string, payload PublishPa
 
 	q, err := r.channel.QueueDeclare(
 		channel, // name
-		false,   // durable
+		true,    // durable
 		false,   // delete when unused
 		false,   // exclusive
 		false,   // no-wait
